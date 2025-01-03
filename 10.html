@@ -1,90 +1,68 @@
-<!DOCTYPE html>
-<head>
-    <title>AJAX Examples</title>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            padding: 20px;
-        }
-        button {
-            margin: 10px;
-            padding: 10px 15px;
-            font-size: 16px;
-            cursor: pointer;
-        }
-        #output {
-            margin-top: 20px;
-            padding: 10px;
-            border: 1px solid #ccc;
-            min-height: 100px;
-            white-space: pre-wrap;
-        }
-    </style>
-</head>
-<body>
-    <h1>AJAX Examples</h1>
-    <button id="plain-ajax-btn">Load Text (Plain AJAX)</button>
-    <button id="jquery-ajax-btn">Load Text (jQuery AJAX)</button>
-    <button id="jquery-json-btn">Load JSON (jQuery getJSON)</button>
-    <button id="parse-json-btn">Parse JSON (jQuery parseJSON)</button>
-    <div id="output"></div>
+<!doctype>
+<html>
+	<head>
+		<title>ajax</title>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+	</head>
+	<body>
+		<button id = "plain-text">Load Text(plain)</button>
+		<button id = "plain-text-ajax">Load Text(ajax)</button>
+		<button id = "json-jquery">Load json</button>
+		<button id = "parse-json">load & parse </button>
+		<div id = "output"> </div>
 
-    <script>
-       
-        function showOutput(text) {
-            document.getElementById('output').innerText = text;
-        }
+		<script> 
+			function show(text){
+				document.getElementById("output").innerText = text;
+			}
+			
+			document.getElementById("plain-text").addEventListener("click" , function() {
+					var xhr = new XMLHttpRequest();
+					xhr.open("GET", "textfile.txt", "true");
+					xhr.onload = function() {
+							if(xhr.status === 200){
+								show(xhr.response);
+							}
+							else{
+								show("Data not");
+							}
+						}
+					xhr.send();
+				})
 
-       
-        document.getElementById('plain-ajax-btn').addEventListener('click', function () {
-            var xhr = new XMLHttpRequest();
-            xhr.open('GET', 'textfile.txt', true);            
- xhr.onload = function () {
-                if (xhr.status === 200) {
-                    showOutput(xhr.responseText);              
-   } else {
-                    showOutput('Error loading file.');
-                }
-            };
-            xhr.send();
-        });
+			$("#plain-text-ajax").on("click", function(){
+					$.ajax({
+					url : "textfile.txt",
+					method : "get",
+					success : function(data){show(data)},
+					error : function(){show("no")}
+					})
+				})
 
-        
-        $('#jquery-ajax-btn').on('click', function () {
-            $.ajax({
-                url: 'textfile.txt', 
-                method: 'GET',
-                success: function (data) {
-                    showOutput(data); 
-                },
-                error: function () {
-                    showOutput('Error loading file.');
-                }
-            });
-        });
-
-     
-        $('#jquery-json-btn').on('click', function () {
-            $.getJSON('data.json', function (data){	           					showOutput(JSON.stringify(data, null, 2)); 
-            }).fail(function () {
-                showOutput('Error loading JSON.');
-            });
-        });
-
-     
-        $('#parse-json-btn').on('click', function () {
-            $.get('data.json')                 .done(function (data) {
-                    try {
-                        var parsedData = $.parseJSON(data);                         showOutput(JSON.stringify(parsedData, null, 2)); 
-                    } catch (e) {
-                        showOutput('Error parsing JSON: ' + e.message);
-                    }
-                })
-                .fail(function () {
-                    showOutput('Error loading JSON file.');
-                });
-        });
-    </script>
-</body>
+			$("#json-jquery").on("click", function(){
+			$.getJSON("data.json", function(data){
+				show(JSON.stringify(data,null,2));
+				})
+				.fail(function(){
+					show(".NO");
+				})
+			})
+	
+			$("#parse-json").on("click", function(){
+					$.get("data.json")
+					.done(function(data){
+						try{
+							const result = typeof data === "string" ? JSON.parse(data) : data;
+							show(JSON.stringify(result,null,2));
+						}
+						catch(error){
+							show("error");
+						}
+					})
+					 .fail(function () {
+            						showOutput('Error loading JSON file.');
+        					});
+				})
+		</script>
+	</body>
 </html>
